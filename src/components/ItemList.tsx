@@ -30,12 +30,13 @@ export const ItemList = () => {
     state: { itemList, totalList }
   } = useContext(RootContext);
   const total = _.last(totalList);
-  const dayTotal = _.chain(totalList)
-    .filter({
-      dateKey: moment()
+  const dateKey = total
+    ? total.dateKey
+    : moment()
         .local()
-        .format("YYYY-MM-DD")
-    })
+        .format("YYYY-MM-DD");
+  const dayTotal = _.chain(totalList)
+    .filter({ dateKey })
     .sumBy("value")
     .valueOf();
   return (
