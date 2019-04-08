@@ -30,6 +30,14 @@ export const ItemList = () => {
     state: { itemList, totalList }
   } = useContext(RootContext);
   const total = _.last(totalList);
+  const dayTotal = _.chain(totalList)
+    .filter({
+      dateKey: moment()
+        .local()
+        .format("YYYY-MM-DD")
+    })
+    .sumBy("value")
+    .valueOf();
   return (
     <table className="table">
       <thead>
@@ -56,11 +64,18 @@ export const ItemList = () => {
           </tr>
         ))}
         {total && (
-          <tr className="table-info">
-            <td>{moment(total.date).format("MM/DD")}</td>
-            <td>{timeRange(total.timeRangeIndex)}</td>
-            <td className="text-right">{total.value}</td>
-          </tr>
+          <>
+            <tr className="table-info">
+              <td>{moment(total.date).format("MM/DD")}</td>
+              <td>{timeRange(total.timeRangeIndex)}</td>
+              <td className="text-right">{total.value}</td>
+            </tr>
+            <tr className="table-success">
+              <td>{moment(total.dateKey).format("MM/DD")}</td>
+              <td>合計(06:00-06:00)</td>
+              <td className="text-right">{dayTotal}</td>
+            </tr>
+          </>
         )}
       </tbody>
     </table>
