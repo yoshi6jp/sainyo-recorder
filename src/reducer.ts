@@ -1,10 +1,11 @@
 import { initialState } from "./store";
 import { ActionTypes, Actions } from "./actions";
+import _ from "lodash";
 export const reducer = (state = initialState, action: Actions) => {
   switch (action.type) {
     case ActionTypes.PUT_ITEM: {
       const { item } = action.payload;
-      const itemList = [...state.itemList, item];
+      const itemList = _.sortBy([...state.itemList, item], "datetime");
       return { ...state, itemList };
     }
     case ActionTypes.SET_ITEMS: {
