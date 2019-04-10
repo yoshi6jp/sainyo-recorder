@@ -8,12 +8,12 @@ export const useSideEffector = <S, A>(
   [state, dispatch]: [S, Dispatch<A>],
   sideEffector: SideEffector<S, A>
 ): [S, Dispatch<A>] => {
-  const dispatchSECaller = (action: A) => {
+  const dispatchSECaller = useCallback((action: A) => {
     dispatchSE(action);
-  };
+  }, []);
   const dispatchSE = useCallback(
     dispatchSideEffector(state, dispatch, sideEffector, dispatchSECaller),
-    [state, dispatch]
+    [state, dispatch, dispatchSECaller]
   );
   return [state, dispatchSE];
 };
