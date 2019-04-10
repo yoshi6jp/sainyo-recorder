@@ -1,6 +1,6 @@
 .top {
   position: sticky;
+  text-align: right;
   bottom: 10px;
-  right: 10px;
-  float: right;
+  margin-right: 10px;
 }

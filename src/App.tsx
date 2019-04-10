@@ -7,10 +7,10 @@ const App = () => {
   return (
     <Provider>
       <div className="container">
-        <header>採尿レコーダー</header>
+        <header>採尿量レコーダー</header>
         <ItemList />
-        <InputButton />
       </div>
+      <InputButton />
     </Provider>
   );
 };

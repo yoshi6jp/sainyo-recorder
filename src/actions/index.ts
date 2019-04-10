@@ -6,7 +6,8 @@ export enum ActionTypes {
   PUT_TOTAL = "PUT_TOTAL",
   LOAD_TOTALS = "LOAD_TOTALS",
   SET_TOTALS = "SET_TOTALS",
-  CALC_TOTAL = "CALC_TOTAL"
+  CALC_TOTAL = "CALC_TOTAL",
+  SCROLL_BOTTOM = "SCROLL_BOTTOM"
 }
 
 export interface IAction {
@@ -40,6 +41,9 @@ export interface CALC_TOTAL extends IAction {
   type: ActionTypes.CALC_TOTAL;
   payload: { query: TotalQuery };
 }
+export interface SCROLL_BOTTOM extends IAction {
+  type: ActionTypes.SCROLL_BOTTOM;
+}
 
 export type Actions =
   | PUT_ITEM
@@ -48,4 +52,5 @@ export type Actions =
   | PUT_TOTAL
   | LOAD_TOTALS
   | SET_TOTALS
-  | CALC_TOTAL;
+  | CALC_TOTAL
+  | SCROLL_BOTTOM;

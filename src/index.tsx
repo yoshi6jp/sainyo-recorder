@@ -6,6 +6,7 @@ import "antd-mobile/dist/antd-mobile.css";
 import "bootstrap-css-only/css/bootstrap.min.css";
 import "material-design-icons/iconfont/material-icons.css";
 import "@material/fab/dist/mdc.fab.css";
+import "@rmwc/data-table/data-table.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 

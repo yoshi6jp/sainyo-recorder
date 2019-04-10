@@ -5,11 +5,24 @@ import { Actions, ActionTypes } from "./actions";
 import { db, TotalQuery } from "./AppDb";
 import { toDateKey } from "./util/converter";
 import _ from "lodash";
+import moment from "moment";
+const DISPLAY_DAY_SPAN = 5;
 const loadItems = async (dispatch: Dispatch<Actions>) => {
   const items = await db.items
-    .orderBy("datetime")
-    .limit(30)
-    .toArray();
+    .where("datetime")
+    .between(
+      moment()
+        .local()
+        .startOf("days")
+        .subtract(DISPLAY_DAY_SPAN, "days")
+        .toDate(),
+      moment()
+        .local()
+        .endOf("days")
+        .toDate()
+    )
+    .sortBy("dattime");
+
   dispatch({ type: ActionTypes.SET_ITEMS, payload: { items } });
 };
 const loadTotals = async (dispatch: Dispatch<Actions>) => {

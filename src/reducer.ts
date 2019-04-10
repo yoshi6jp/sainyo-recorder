@@ -11,12 +11,16 @@ export const reducer = (state = initialState, action: Actions) => {
     case ActionTypes.SET_ITEMS: {
       const { items } = action.payload;
       const itemList = [...items];
+
       return { ...state, itemList };
     }
     case ActionTypes.SET_TOTALS: {
       const { totals } = action.payload;
       const totalList = [...totals];
       return { ...state, totalList };
+    }
+    case ActionTypes.SCROLL_BOTTOM: {
+      return { ...state, scrollBottomEvt: Date.now() };
     }
 
     default: {
