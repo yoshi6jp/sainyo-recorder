@@ -44,13 +44,19 @@ export const InputButton = () => {
       dispatch({ type: ActionTypes.PUT_ITEM, payload: { item } });
       setValue("");
       setVisible(false);
-      dispatch({ type: ActionTypes.SCROLL_BOTTOM });
     }
   }, [dispatch, datetime, value, setVisible]);
   return (
     <div className={classnames(styles.top)}>
       <Fab icon="add" onClick={onOpen} />
-      <Modal popup visible={visible} animationType="slide-up" onClose={onClose}>
+      <Modal
+        closable={true}
+        popup
+        visible={visible}
+        animationType="slide-up"
+        onClose={onClose}
+        className={classnames(styles.modal)}
+      >
         <List renderHeader={"採尿量入力"}>
           <DatePicker
             locale={enUs}

@@ -13,30 +13,86 @@ import { ITotal, IItem } from "../AppDb";
 import moment from "moment";
 import _ from "lodash";
 import { timeRange } from "../util/converter";
-const ItemsTotal = ({ items, total }: { items: IItem[]; total: ITotal }) => {
+
+interface IItemKyeIdx {
+  dateKey: string;
+  timeRangeIndex: number;
+  hasDayTotal: boolean;
+  items: IItem[];
+  hasBottomEl: boolean;
+}
+const ItemsTotal = ({
+  items,
+  totals,
+  hasDayTotal,
+  dateKey,
+  timeRangeIndex,
+  hasBottomEl
+}: {
+  items: IItem[];
+  totals: ITotal[];
+  dateKey: string;
+  hasDayTotal: boolean;
+  timeRangeIndex: number;
+  hasBottomEl: boolean;
+}) => {
+  const {
+    state: { scrollBottomEvt }
+  } = useContext(RootContext);
+
+  const bottomEl = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (bottomEl.current && hasBottomEl) {
+      bottomEl.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [bottomEl, scrollBottomEvt]);
+
+  const total = _.find(totals, { dateKey, timeRangeIndex });
+  let dayTotal: number = NaN;
+  if (hasDayTotal) {
+    dayTotal = _.chain(totals)
+      .filter({ dateKey })
+      .sumBy("value")
+      .value();
+  }
+
   return (
     <>
-      {items.map((item, idx) => {
-        <tr key={idx}>
-          <td>
+      {items.map(item => (
+        <DataTableRow key={item.datetime.getTime()}>
+          <DataTableCell>
             {moment(item.datetime)
               .local()
               .format("MM/DD")}
-          </td>
-          <td>
+          </DataTableCell>
+          <DataTableCell>
             {moment(item.datetime)
               .local()
               .format("HH:mm")}
-          </td>
-          <td>{item.value}</td>
-        </tr>;
-      })}
+          </DataTableCell>
+          <DataTableCell alignEnd>{item.value}</DataTableCell>
+        </DataTableRow>
+      ))}
+      {total && (
+        <DataTableRow className="table-info">
+          <DataTableCell>{moment(total.date).format("MM/DD")}</DataTableCell>
+          <DataTableCell>{timeRange(total.timeRangeIndex)}</DataTableCell>
+          <DataTableCell alignEnd>{total.value}</DataTableCell>
+        </DataTableRow>
+      )}
+      {!Number.isNaN(dayTotal) && (
+        <DataTableRow className="table-success" ref={bottomEl}>
+          <DataTableCell>{moment(dateKey).format("MM/DD")}</DataTableCell>
+          <DataTableCell>合計(06:00-06:00)</DataTableCell>
+          <DataTableCell alignEnd>{dayTotal}</DataTableCell>
+        </DataTableRow>
+      )}
     </>
   );
 };
 export const ItemList = () => {
   const {
-    state: { itemList, totalList, scrollBottomEvt }
+    state: { totalList, itemListByDate }
   } = useContext(RootContext);
   const total = _.last(totalList);
   const dateKey = total
@@ -44,17 +100,43 @@ export const ItemList = () => {
     : moment()
         .local()
         .format("YYYY-MM-DD");
-  const dayTotal = _.chain(totalList)
-    .filter({ dateKey })
-    .sumBy("value")
-    .valueOf();
-  const bottomEl = useRef<HTMLElement>(null);
-  useEffect(() => {
-    console.log("btm", bottomEl);
-    if (bottomEl.current) {
-      bottomEl.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [bottomEl, scrollBottomEvt]);
+  let items: IItemKyeIdx[] = [];
+  if (!_.isEmpty(itemListByDate)) {
+    items = _.chain(itemListByDate)
+      .keys()
+      .sort()
+      .map(dateKey => ({ dateKey, items: itemListByDate[dateKey] }))
+      .map(({ dateKey, items }) => {
+        const len = _.keys(items).length;
+        return _.chain(items)
+          .keys()
+          .map(Number)
+          .sort((a, b) => {
+            if (a === 0) {
+              return 1;
+            } else if (b === 0) {
+              return -1;
+            } else if (a > b) {
+              return 1;
+            } else if (a < b) {
+              return -1;
+            } else {
+              return 0;
+            }
+          })
+          .map((timeRangeIndex, idx) => ({
+            dateKey,
+            timeRangeIndex,
+            items: items[timeRangeIndex],
+            hasDayTotal: idx + 1 === len,
+            hasBottomEl: false
+          }))
+          .value();
+      })
+      .flatten()
+      .value();
+    _.set(_.last(items) || {}, "hasBottomEl", true);
+  }
   return (
     <DataTable stickyRows={1} style={{ height: "calc(100vh - 100px)" }}>
       <DataTableContent>
@@ -66,83 +148,15 @@ export const ItemList = () => {
           </DataTableRow>
         </DataTableHead>
         <DataTableBody>
-          {itemList.map(item => (
-            <DataTableRow key={item.datetime.getTime()}>
-              <DataTableCell>
-                {moment(item.datetime)
-                  .local()
-                  .format("MM/DD")}
-              </DataTableCell>
-              <DataTableCell>
-                {moment(item.datetime)
-                  .local()
-                  .format("HH:mm")}
-              </DataTableCell>
-              <DataTableCell alignEnd>{item.value}</DataTableCell>
-            </DataTableRow>
+          {items.map(item => (
+            <ItemsTotal
+              {...item}
+              key={`${item.dateKey}-${item.timeRangeIndex}`}
+              totals={totalList}
+            />
           ))}
-          {total && (
-            <>
-              <DataTableRow className="table-info">
-                <DataTableCell>
-                  {moment(total.date).format("MM/DD")}
-                </DataTableCell>
-                <DataTableCell>{timeRange(total.timeRangeIndex)}</DataTableCell>
-                <DataTableCell alignEnd>{total.value}</DataTableCell>
-              </DataTableRow>
-              <DataTableRow ref={bottomEl} className="table-success">
-                <DataTableCell>
-                  {moment(total.dateKey).format("MM/DD")}
-                </DataTableCell>
-                <DataTableCell>合計(06:00-06:00)</DataTableCell>
-                <DataTableCell alignEnd>{dayTotal}</DataTableCell>
-              </DataTableRow>
-            </>
-          )}
         </DataTableBody>
       </DataTableContent>
     </DataTable>
   );
-  // return (
-  //   <table className="table">
-  //     <thead>
-  //       <tr>
-  //         <th>日付</th>
-  //         <th>時間</th>
-  //         <th className="text-right">採尿量</th>
-  //       </tr>
-  //     </thead>
-  //     <tbody>
-  //       {itemList.map(item => (
-  //         <tr key={item.datetime.getTime()}>
-  //           <td>
-  //             {moment(item.datetime)
-  //               .local()
-  //               .format("MM/DD")}
-  //           </td>
-  //           <td>
-  //             {moment(item.datetime)
-  //               .local()
-  //               .format("HH:mm")}
-  //           </td>
-  //           <td className="text-right">{item.value}</td>
-  //         </tr>
-  //       ))}
-  //       {total && (
-  //         <>
-  //           <tr className="table-info">
-  //             <td>{moment(total.date).format("MM/DD")}</td>
-  //             <td>{timeRange(total.timeRangeIndex)}</td>
-  //             <td className="text-right">{total.value}</td>
-  //           </tr>
-  //           <tr className="table-success">
-  //             <td>{moment(total.dateKey).format("MM/DD")}</td>
-  //             <td>合計(06:00-06:00)</td>
-  //             <td className="text-right">{dayTotal}</td>
-  //           </tr>
-  //         </>
-  //       )}
-  //     </tbody>
-  //   </table>
-  // );
 };

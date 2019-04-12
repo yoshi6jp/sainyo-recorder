@@ -1,11 +1,8 @@
 import { IItem, ITotal, IValue } from "./AppDb";
-export interface IItemListByDate {
-  [dateKey: string]: {
-    [timeRangeIndex: number]: IItem;
-  };
-}
+import _, { Dictionary } from "lodash";
+export type IItemListByDate = Dictionary<Dictionary<IItem[]>>;
+
 export interface AppState {
-  itemList: IItem[];
   itemListByDate: IItemListByDate;
   totalList: ITotal[];
   valueList: IValue[];
@@ -13,7 +10,6 @@ export interface AppState {
 }
 
 export const initialState: AppState = {
-  itemList: [],
   itemListByDate: {},
   totalList: [],
   valueList: [],

@@ -4,3 +4,6 @@
   bottom: 10px;
   margin-right: 10px;
 }
+.modal :global(.am-modal-close) {
+  margin-top: 10px;
+}

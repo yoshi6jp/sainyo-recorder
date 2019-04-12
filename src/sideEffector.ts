@@ -6,7 +6,7 @@ import { db, TotalQuery } from "./AppDb";
 import { toDateKey } from "./util/converter";
 import _ from "lodash";
 import moment from "moment";
-const DISPLAY_DAY_SPAN = 5;
+const DISPLAY_DAY_SPAN = 3;
 const loadItems = async (dispatch: Dispatch<Actions>) => {
   const items = await db.items
     .where("datetime")
@@ -28,6 +28,7 @@ const loadItems = async (dispatch: Dispatch<Actions>) => {
 const loadTotals = async (dispatch: Dispatch<Actions>) => {
   const totals = await db.totals.toArray();
   dispatch({ type: ActionTypes.SET_TOTALS, payload: { totals } });
+  dispatch({ type: ActionTypes.SCROLL_BOTTOM });
 };
 const calcTotal = async (dispatch: Dispatch<Actions>, query: TotalQuery) => {
   const totalDoc = await db.totals.get({ ...query });
@@ -50,6 +51,7 @@ export const sideEffector: SideEffector<AppState, Actions> = (
       db.items.put(item);
       const query: TotalQuery = { date, timeRangeIndex };
       dispatch({ type: ActionTypes.CALC_TOTAL, payload: { query } });
+      dispatch({ type: ActionTypes.LOAD_ITEMS });
       return;
     }
     case ActionTypes.LOAD_ITEMS: {
