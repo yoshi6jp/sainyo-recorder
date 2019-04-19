@@ -31,3 +31,6 @@ export const timeRange = (timeRangeIndex: number) =>
     .startOf("days")
     .add(TIME_SPAN * (timeRangeIndex + 1), "hours")
     .format("HH:mm")}`;
+
+export const toRange = (timeRnageIndex: number) =>
+  `${TIME_SPAN * timeRnageIndex} - ${TIME_SPAN * ((timeRnageIndex + 1) % 4)}`;

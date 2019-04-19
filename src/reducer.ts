@@ -20,7 +20,12 @@ export const reducer = (state = initialState, action: Actions) => {
     case ActionTypes.SCROLL_BOTTOM: {
       return { ...state, scrollBottomEvt: Date.now() };
     }
-
+    case ActionTypes.SHOW_NAVS: {
+      return { ...state, isNavsDisplayed: true };
+    }
+    case ActionTypes.HIDE_NAVS: {
+      return { ...state, isNavsDisplayed: false };
+    }
     default: {
       return state;
     }

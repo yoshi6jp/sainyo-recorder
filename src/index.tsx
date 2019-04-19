@@ -7,6 +7,9 @@ import "bootstrap-css-only/css/bootstrap.min.css";
 import "material-design-icons/iconfont/material-icons.css";
 import "@material/fab/dist/mdc.fab.css";
 import "@rmwc/data-table/data-table.css";
+import "@material/top-app-bar/dist/mdc.top-app-bar.css";
+import "@material/icon-button/dist/mdc.icon-button.css";
+import "react-calendar-heatmap/dist/styles.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 

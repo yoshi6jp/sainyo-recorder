@@ -13,6 +13,7 @@ import { ITotal, IItem } from "../AppDb";
 import moment from "moment";
 import _ from "lodash";
 import { timeRange } from "../util/converter";
+import { DeleteButton } from "./DeleteButton";
 
 interface IItemKyeIdx {
   dateKey: string;
@@ -71,6 +72,9 @@ const ItemsTotal = ({
               .format("HH:mm")}
           </DataTableCell>
           <DataTableCell alignEnd>{item.value}</DataTableCell>
+          <DataTableCell>
+            <DeleteButton id={item.id} />
+          </DataTableCell>
         </DataTableRow>
       ))}
       {total && (
@@ -78,6 +82,8 @@ const ItemsTotal = ({
           <DataTableCell>{moment(total.date).format("MM/DD")}</DataTableCell>
           <DataTableCell>{timeRange(total.timeRangeIndex)}</DataTableCell>
           <DataTableCell alignEnd>{total.value}</DataTableCell>
+
+          <DataTableCell />
         </DataTableRow>
       )}
       {!Number.isNaN(dayTotal) && (
@@ -85,6 +91,8 @@ const ItemsTotal = ({
           <DataTableCell>{moment(dateKey).format("MM/DD")}</DataTableCell>
           <DataTableCell>合計(06:00-06:00)</DataTableCell>
           <DataTableCell alignEnd>{dayTotal}</DataTableCell>
+
+          <DataTableCell />
         </DataTableRow>
       )}
     </>
@@ -145,6 +153,7 @@ export const ItemList = () => {
             <DataTableHeadCell>日付</DataTableHeadCell>
             <DataTableHeadCell>時間</DataTableHeadCell>
             <DataTableHeadCell>採尿量</DataTableHeadCell>
+            <DataTableHeadCell />
           </DataTableRow>
         </DataTableHead>
         <DataTableBody>

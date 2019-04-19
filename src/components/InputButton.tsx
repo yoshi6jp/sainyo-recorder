@@ -12,14 +12,16 @@ export const InputButton = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [datetime, setDatetime] = useState<Date>(new Date());
   const [value, setValue] = useState<string>("");
-  const { state, dispatch } = useContext(RootContext);
+  const { dispatch } = useContext(RootContext);
   const onOpen = useCallback(() => {
     setDatetime(new Date());
     setVisible(true);
-  }, [setVisible]);
+    dispatch && dispatch({ type: ActionTypes.HIDE_NAVS });
+  }, [setVisible, dispatch]);
   const onClose = useCallback(() => {
     setVisible(false);
-  }, [setVisible]);
+    dispatch && dispatch({ type: ActionTypes.SHOW_NAVS });
+  }, [setVisible, dispatch]);
   const onDatetimeChange = useCallback(
     (date: Date) => {
       setDatetime(date);
@@ -44,6 +46,7 @@ export const InputButton = () => {
       dispatch({ type: ActionTypes.PUT_ITEM, payload: { item } });
       setValue("");
       setVisible(false);
+      dispatch({ type: ActionTypes.SHOW_NAVS });
     }
   }, [dispatch, datetime, value, setVisible]);
   return (
@@ -69,6 +72,7 @@ export const InputButton = () => {
             type={"number"}
             onChange={onValueChange}
             defaultValue={value}
+            extra="ml"
           >
             採尿量
           </InputItem>

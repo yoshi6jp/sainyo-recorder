@@ -7,11 +7,13 @@ export interface AppState {
   totalList: ITotal[];
   valueList: IValue[];
   scrollBottomEvt: number;
+  isNavsDisplayed: boolean;
 }
 
 export const initialState: AppState = {
   itemListByDate: {},
   totalList: [],
   valueList: [],
-  scrollBottomEvt: 0
+  scrollBottomEvt: 0,
+  isNavsDisplayed: true
 };
